@@ -89,40 +89,41 @@ class RedditBot():
                             best_comment_2 = top_level_comment
                             break
 
-                best_comment.reply_sort = "top"
-                best_comment.refresh()
-                replies = best_comment.replies
+                if best_comment is not None:
+                    best_comment.reply_sort = "top"
+                    best_comment.refresh()
+                    replies = best_comment.replies
 
-                best_reply = None
-                for top_level_comment in replies:
-                    # Here you can fetch data off the comment.
-                    # For the sake of example, we're just printing the comment body.
-                    best_reply = top_level_comment
-                    if len(best_reply.body) <= 140 and "http" not in best_reply.body:
-                        break
+                    best_reply = None
+                    for top_level_comment in replies:
+                        # Here you can fetch data off the comment.
+                        # For the sake of example, we're just printing the comment body.
+                        best_reply = top_level_comment
+                        if len(best_reply.body) <= 140 and "http" not in best_reply.body:
+                            break
 
-                if best_reply is not None:
-                    best_reply = best_reply.body
-                else:
-                    best_reply = "MIA"
-                    if best_comment_2 is not None:
-                        best_reply = best_comment_2.body
+                    if best_reply is not None:
+                        best_reply = best_reply.body
+                    else:
+                        best_reply = "MIA"
+                        if best_comment_2 is not None:
+                            best_reply = best_comment_2.body
 
-                data_file = {
-                    "image_path": image_path,
-                    'id': submission.id,
-                    "title": submission.title,
-                    "score": submission.score,
-                    "18": submission.over_18,
-                    "Best_comment": best_comment.body,
-                    "best_reply": best_reply
-                }
+                    data_file = {
+                        "image_path": image_path,
+                        'id': submission.id,
+                        "title": submission.title,
+                        "score": submission.score,
+                        "18": submission.over_18,
+                        "Best_comment": best_comment.body,
+                        "best_reply": best_reply
+                    }
 
-                self.post_data.append(data_file)
-                self.already_posted.append(submission.id)
-                with open(f"{data_folder_path}{submission.id}.json", "w") as outfile:
-                    json.dump(data_file, outfile)
-                with open(self.posted_already_path, "w") as outfile:
-                    json.dump(self.already_posted, outfile)
+                    self.post_data.append(data_file)
+                    self.already_posted.append(submission.id)
+                    with open(f"{data_folder_path}{submission.id}.json", "w") as outfile:
+                        json.dump(data_file, outfile)
+                    with open(self.posted_already_path, "w") as outfile:
+                        json.dump(self.already_posted, outfile)
             else:
                 return None
