@@ -31,22 +31,26 @@ while True:
         redditbot.save_image(post)
 
     # Create the movie itself!
-    CreateMovie.CreateMP4(redditbot.post_data)
+    t = 0;
+    res = CreateMovie.CreateMP4(redditbot.post_data)
+    if res is not None:
+        # Video info for YouTube.
+        # This example uses the first post title.
+        video_data = {
+                "file": "video.mp4",
+                "title": f"{redditbot.post_data[0]['title'].upper()}",
+                "description": "#shorts",
+                "keywords":"meme,reddit,Dankestmemes",
+                "privacyStatus":"public"
+        }
 
-    # Video info for YouTube.
-    # This example uses the first post title.
-    video_data = {
-            "file": "video.mp4",
-            "title": f"{redditbot.post_data[0]['title'].upper()}",
-            "description": "#shorts",
-            "keywords":"meme,reddit,Dankestmemes",
-            "privacyStatus":"public"
-    }
-
-    print(video_data["title"].upper())
-    print("Posting Video in 5 minutes...")
-    # time.sleep(60 * 5)
-    upload_video(video_data)
-
+        print(video_data["title"].upper())
+        print("Posting Video in 5 minutes...")
+        # time.sleep(60 * 5)
+        upload_video(video_data)
+        t = 60 * 60 * 24 - 1;
+    else:
+        print("No data found.")
+        t = 300;
     # Sleep until ready to post another video!
-    time.sleep(60 * 60 * 24 - 1)
+    time.sleep(t)
