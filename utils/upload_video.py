@@ -141,11 +141,11 @@ def upload_video(video_data):
     print("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content))
 
 if __name__ == '__main__':
-    video_data = {
-        "file": "video.mp4",
-        "title": "Best of memes!",
-        "description": "#shorts \n Giving you the hottest memes of the day with funny comments!",
-        "keywords":"meme,reddit",
-        "privacyStatus":"private"
-    }
-    update_video(video_data)
+  video_data = {
+      "file": "video.mp4",
+      "title": "Best of memes!",
+      "description": "#shorts \n Giving you the hottest memes of the day with funny comments!",
+      "keywords":"meme,reddit",
+      "privacyStatus":"private"
+  }
+  upload_video(video_data)

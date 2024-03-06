@@ -37,15 +37,15 @@ while True:
     # This example uses the first post title.
     video_data = {
             "file": "video.mp4",
-            "title": f"{redditbot.post_data[0]['title']}",
+            "title": f"{redditbot.post_data[0]['title'].upper()}",
             "description": "#shorts",
             "keywords":"meme,reddit,Dankestmemes",
             "privacyStatus":"public"
     }
 
-    print(video_data["title"])
+    print(video_data["title"].upper())
     print("Posting Video in 5 minutes...")
-    time.sleep(60 * 5)
+    # time.sleep(60 * 5)
     upload_video(video_data)
 
     # Sleep until ready to post another video!
