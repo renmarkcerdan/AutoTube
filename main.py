@@ -10,30 +10,37 @@ Quick notes!
 
 from datetime import date
 import time
+import os
 from utils.CreateMovie import CreateMovie, GetDaySuffix
 from utils.RedditBot import RedditBot
 from utils.upload_video import upload_video
+from scrape_video import startScraping
 
 #Create Reddit Data Bot
 redditbot = RedditBot()
 
 # Leave if you want to run it 24/7
 while True:
+    today = date.today()
+    dir_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    data_path = os.path.join(dir_path, "data/")
+    dt_string = today.strftime("%m%d%Y")
+    data_folder_path = os.path.join(data_path, f"{dt_string}/")
+    check_folder = os.path.isdir(data_folder_path)
+    # If folder doesn't exist, then create it.
+    if not check_folder:
+        # Gets our new posts pass if image related subs. Default is memes
+        posts = redditbot.get_posts("memes")
 
-    # Gets our new posts pass if image related subs. Default is memes
-    posts = redditbot.get_posts("memes")
+        # Create folder if it doesn't exist
+        redditbot.create_data_folder()
 
-    # Create folder if it doesn't exist
-    redditbot.create_data_folder()
+        # Go through posts and find 5 that will work for us.
+        for post in posts:
+            redditbot.save_image(post)
 
-    # Go through posts and find 5 that will work for us.
-    for post in posts:
-        redditbot.save_image(post)
-
-    # Create the movie itself!
-    t = 0;
-    res = CreateMovie.CreateMP4(redditbot.post_data)
-    if res is not None:
+        # Create the movie itself!
+        CreateMovie.CreateMP4(redditbot.post_data)
         # Video info for YouTube.
         # This example uses the first post title.
         video_data = {
@@ -45,12 +52,12 @@ while True:
         }
 
         print(video_data["title"].upper())
-        print("Posting Video in 5 minutes...")
-        # time.sleep(60 * 5)
+        print("Posting Video in 1 minute...")
+        time.sleep(10)
         upload_video(video_data)
-        t = 60 * 60 * 24 - 1;
-    else:
-        print("No data found.")
-        t = 300;
+    
+    # while uploading meme lets start scraping video from tiktok
+    startScraping() # uploading scraped video with 15mins interval
+
     # Sleep until ready to post another video!
-    time.sleep(t)
+    # time.sleep(60 * 60 * 24 - 1)

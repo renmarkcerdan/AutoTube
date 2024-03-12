@@ -42,4 +42,4 @@ def save_new_gif(new_frames, old_gif_information, new_path):
 
 
 if __name__ == "__main__":
-    scale_gif(f"Post-qtehpj.gif", (720,1280),"test.gif")
+    scale_gif(f"Post-qtehpj.gif", (1080, 1920),"test.gif")

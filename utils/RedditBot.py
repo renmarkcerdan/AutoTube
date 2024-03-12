@@ -52,7 +52,7 @@ class RedditBot():
         if not check_folder:
             os.makedirs(data_folder_path)
 
-    def save_image(self, submission, scale=(720, 1280)):
+    def save_image(self, submission, scale=(1080, 1920)):
         if "jpg" in submission.url.lower() or "png" in submission.url.lower() or "gif" in submission.url.lower() and "gifv" not in submission.url.lower():
             # try:
 
