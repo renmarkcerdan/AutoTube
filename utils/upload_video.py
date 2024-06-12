@@ -141,6 +141,7 @@ def upload_video(video_data):
   except HttpError as e:
     print("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content))
 
+
 if __name__ == '__main__':
   video_data = {
       "file": "video.mp4",

@@ -29,32 +29,35 @@ while True:
     check_folder = os.path.isdir(data_folder_path)
     # If folder doesn't exist, then create it.
     if not check_folder:
-        # Gets our new posts pass if image related subs. Default is memes
-        posts = redditbot.get_posts("memes")
+        try:
+            # Gets our new posts pass if image related subs. Default is memes
+            posts = redditbot.get_posts("memes")
 
-        # Create folder if it doesn't exist
-        redditbot.create_data_folder()
+            # Create folder if it doesn't exist
+            redditbot.create_data_folder()
 
-        # Go through posts and find 5 that will work for us.
-        for post in posts:
-            redditbot.save_image(post)
+            # Go through posts and find 5 that will work for us.
+            for post in posts:
+                redditbot.save_image(post)
 
-        # Create the movie itself!
-        CreateMovie.CreateMP4(redditbot.post_data)
-        # Video info for YouTube.
-        # This example uses the first post title.
-        video_data = {
-                "file": "video.mp4",
-                "title": f"{redditbot.post_data[0]['title'].upper()}",
-                "description": "#shorts",
-                "keywords":"meme,reddit,Dankestmemes",
-                "privacyStatus":"public"
-        }
+            # Create the movie itself!
+            CreateMovie.CreateMP4(redditbot.post_data)
+            # Video info for YouTube.
+            # This example uses the first post title.
+            video_data = {
+                    "file": "video.mp4",
+                    "title": f"{redditbot.post_data[0]['title'].upper()}",
+                    "description": "#shorts",
+                    "keywords":"meme,reddit,Dankestmemes",
+                    "privacyStatus":"public"
+            }
 
-        print(video_data["title"].upper())
-        print("Posting Video in 1 minute...")
-        time.sleep(10)
-        upload_video(video_data)
+            print(video_data["title"].upper())
+            print("Posting Video in 1 minute...")
+            time.sleep(10)
+            upload_video(video_data)
+        except Exception as e:
+            print(f"Error Occured Creating Meme: {str(e)}")
     
     # while uploading meme lets start scraping video from tiktok
     startScraping() # uploading scraped video with 15mins interval

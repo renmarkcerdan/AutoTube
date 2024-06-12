@@ -21,10 +21,13 @@ def downloadVideo(link, id):
 
     #   Check for a posted_already.json file
     posted_already_path = os.path.join(data_path, "tiktok_posted.json")
-    if os.path.isfile(posted_already_path):
-        print("Loading tiktok_posted.json from data folder.")
-        with open(posted_already_path, "r", encoding='utf-8') as file:
-            already_posted = json.load(file)
+
+    if not os.path.isfile(posted_already_path):
+        os.makedirs(posted_already_path)
+
+    print("Loading tiktok_posted.json from data folder.")
+    with open(posted_already_path, "r", encoding='utf-8') as file:
+        already_posted = json.load(file)
 
     if tiktokID not in already_posted:
         print(f"Downloading video {id} from: {link}")
@@ -88,78 +91,84 @@ def downloadVideo(link, id):
 
         mp4File = urlopen(downloadLink)
         # Feel free to change the download directory
-        with open(f"{video}", "wb") as output:
-            while True:
-                data = mp4File.read()
-                if data:
-                    print("STEP 5.1: Currently Writing the file..")
-                    output.write(data)
-                    time.sleep(10)
-                    clip = mp.VideoFileClip(f"{video}")
-                    duration = clip.duration
-                    if(duration > 60):
-                        clip = clip.subclip(0, 60)
-                        print("STEP 5.2: Subclip processing..")
-                        
-                    # clip.write_videofile(f"{newName}")
-                    clip.write_videofile(f"{tempVideo}", fps = 30)
-                    os.remove(video)
-                    # clip = mp.VideoFileClip(f"{newName}")
-
-                    time.sleep(10)
-                    clip = mp.VideoFileClip(f"{tempVideo}")
-                    (w, h) = clip.size
-                    crop_width = h * 9/16
-                    x1, x2 = (w - crop_width)//2, (w+crop_width)//2
-                    y1, y2 = 0, h
-                    clip = vfx.crop(clip, x1=x1, y1=y1, x2=x2, y2=y2)
-                    # newClip = vfx.crop(newClip, x1=0, y1=0, width=1080, height=1980)
-                    clip.write_videofile(f"{video}", fps = 30)
-                    if os.path.exists(tempVideo):
-                        os.remove(tempVideo)
-                        
-                    if os.path.exists(video):
-                        print("STEP 5.3: Oyea File is done and ready to upload!")
-                        tiktokUser = link.split("/")[3]
-                        video_data = {
-                            "file": f"{video}",
-                            "title": f"{videoTitle}",
-                            "description": f"#shorts {tiktokUser}",
-                            "keywords":"meme,reddit,Dankestmemes,comdey,tiktok,tiktokvideos",
-                            "privacyStatus":"public"
-                        }
-                        error = None;
-                        try:
-                            upload_video(video_data) 
-                        except HttpError as e:
-                            error = f"{e.content.error.reason}"
-                        if error is not None:
-                            print(f"{error} trying to re-upload the video..")
-                            response = None
-                            retry = 0
-                            while response is None:
-                                upload_video(video_data)
-                                retry += 1
-                                if retry > 10:
-                                    exit("No longer attempting to retry.")
-                                max_sleep = 2 ** retry
-                                sleep_seconds = random.random() * max_sleep
-                                print("Sleeping %f seconds and then retrying..." % sleep_seconds)
-                                time.sleep(sleep_seconds)
-
-                        already_posted.append(tiktokID)
-                        with open(posted_already_path, "w") as outfile:
-                            json.dump(already_posted, outfile)
-                        print("STEP 6: Hoof! Glad it works! time for the next video after 15mins!")
+        try:
+            with open(f"{video}", "wb") as output:
+                while True:
+                    data = mp4File.read()
+                    if data:
+                        print("STEP 5.1: Currently Writing the file..")
+                        output.write(data)
+                        time.sleep(10)
+                        clip = mp.VideoFileClip(f"{video}")
+                        duration = clip.duration
+                        if(duration > 60):
+                            clip = clip.subclip(0, 60)
+                            print("STEP 5.2: Subclip processing..")
+                            
+                        # clip.write_videofile(f"{newName}")
+                        clip.write_videofile(f"{tempVideo}", fps = 30)
                         os.remove(video)
-                        time.sleep(60 * 15) # 15mins interval
-                else:
-                    break
+                        # clip = mp.VideoFileClip(f"{newName}")
+
+                        time.sleep(10)
+                        clip = mp.VideoFileClip(f"{tempVideo}")
+                        (w, h) = clip.size
+                        crop_width = h * 9/16
+                        x1, x2 = (w - crop_width)//2, (w+crop_width)//2
+                        y1, y2 = 0, h
+                        clip = vfx.crop(clip, x1=x1, y1=y1, x2=x2, y2=y2)
+                        # newClip = vfx.crop(newClip, x1=0, y1=0, width=1080, height=1980)
+                        clip.write_videofile(f"{video}", fps = 30)
+                        if os.path.exists(tempVideo):
+                            os.remove(tempVideo)
+                            
+                        if os.path.exists(video):
+                            print("STEP 5.3: Oyea File is done and ready to upload!")
+                            tiktokUser = link.split("/")[3]
+                            video_data = {
+                                "file": f"{video}",
+                                "title": f"{videoTitle}",
+                                "description": f"#shorts {tiktokUser}",
+                                "keywords":"meme,reddit,Dankestmemes,comdey,tiktok,tiktokvideos",
+                                "privacyStatus":"public"
+                            }
+                            error = None;
+                            try:
+                                upload_video(video_data) 
+                            except HttpError as e:
+                                error = f"{e.content.error.reason}"
+                            if error is not None:
+                                print(f"{error} trying to re-upload the video..")
+                                response = None
+                                retry = 0
+                                while response is None:
+                                    upload_video(video_data)
+                                    retry += 1
+                                    if retry > 10:
+                                        exit("No longer attempting to retry.")
+                                    max_sleep = 2 ** retry
+                                    sleep_seconds = random.random() * max_sleep
+                                    print("Sleeping %f seconds and then retrying..." % sleep_seconds)
+                                    time.sleep(sleep_seconds)
+
+                            already_posted.append(tiktokID)
+                            with open(posted_already_path, "w") as outfile:
+                                json.dump(already_posted, outfile)
+                            print("STEP 6: Hoof! Glad it works! time for the next video after 15mins!")
+                            os.remove(video)
+                            time.sleep(60 * 5) # 5mins interval
+                    else:
+                        break
+        except Exception as e:
+            print(f"Error Occured on Tiktok Scraping: {str(e)}")
+            # print(f"Error Occured on Tiktok Scraping: {str(e)} \n See you tomorrow!")
+            # time.sleep(60 * 60 * 24 - 1)
 
 def startScraping():
     print("STEP 1: Open Chrome browser")
     options = Options()
     options.add_argument("start-maximized")
+    # options.add_argument('--headless')
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     driver = webdriver.Chrome(options=options)
@@ -185,11 +194,11 @@ def startScraping():
 
     # this class may change, so make sure to inspect the page and find the correct class
     className = "e1cg0wnj1"
-
+    urlsToDownload = []
     script  = "let l = [];"
-    script += "document.getElementsByClassName(\""
+    script += "Array.from(document.getElementsByClassName(\""
     script += className
-    script += "\").forEach(item => { l.push(item.querySelector('a').href)});"
+    script += "\")).forEach(item => { l.push(item.querySelector('a').href)});"
     script += "return l;"
 
     urlsToDownload = driver.execute_script(script)
